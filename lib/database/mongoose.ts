@@ -1,32 +1,35 @@
-import mongoose, { Mongoose } from 'mongoose';
+import mongoose, { Mongoose } from "mongoose";
 
-const MONGODB_URI = process.env.MONGODB_URII;
+const MONGODB_URI = process.env.MONGODB_URI; // Ensure this is correctly set
 
 interface MongooseConnection {
   conn: Mongoose | null;
   promise: Promise<Mongoose> | null;
 }
 
-let cached: MongooseConnection = (global as any).mongoose
+// Correctly type global caching without using `var` or `any`
+const globalCache: { mongoose?: MongooseConnection } = globalThis as unknown as {
+  mongoose?: MongooseConnection;
+};
 
-if(!cached) {
-  cached = (global as any).mongoose = { 
-    conn: null, promise: null 
-  }
+// Ensure `cached` is properly assigned and re-assigned
+const cached: MongooseConnection = globalCache.mongoose ?? { conn: null, promise: null };
+
+if (!globalCache.mongoose) {
+  globalCache.mongoose = cached;
 }
 
-export const connectToDatabase = async () => {
-  if(cached.conn) return cached.conn;
+export const connectToDatabase = async (): Promise<Mongoose> => {
+  if (cached.conn) return cached.conn;
 
-  if(!MONGODB_URI) throw new Error('Missing MONGODB_URI');
+  if (!MONGODB_URI) throw new Error("Missing MONGODB_URI");
 
-  cached.promise = 
-    cached.promise || 
-    mongoose.connect(MONGODB_URI, { 
-      dbName: 'imaginify', bufferCommands: false 
-    })
+  cached.promise ??= mongoose.connect(MONGODB_URI, {
+    dbName: "imaginify",
+    bufferCommands: false,
+  });
 
   cached.conn = await cached.promise;
 
   return cached.conn;
-}
+};
