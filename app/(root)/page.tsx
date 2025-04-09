@@ -1,3 +1,4 @@
+import { headers } from "next/headers";
 import { Collection } from "@/components/shared/Collection";
 import { navLinks } from "@/constants";
 import { getAllImages } from "@/lib/actions/image.actions";
@@ -6,11 +7,13 @@ import Link from "next/link";
 
 export const dynamic = "force-dynamic";
 
-const Home = async (props: { searchParams?: { page?: string; query?: string } }) => {
-  const searchParams =await props.searchParams || {};
+const Home = async () => {
+  const headersList = await headers();
+  const url = new URL(headersList.get("https://alter-w89y.vercel.app") || "http://localhost");
+  const searchParams = url.searchParams;
 
-  const page = Number(searchParams.page) || 1;
-  const searchQuery = searchParams.query || "";
+  const page = Number(searchParams.get("page")) || 1;
+  const searchQuery = searchParams.get("query") || "";
 
   const images = await getAllImages({ page, searchQuery });
 
@@ -59,4 +62,3 @@ const Home = async (props: { searchParams?: { page?: string; query?: string } })
 };
 
 export default Home;
-
