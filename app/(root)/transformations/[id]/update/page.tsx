@@ -1,3 +1,5 @@
+// app/(root)/page.tsx
+
 import { auth } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
 
@@ -7,21 +9,21 @@ import { transformationTypes } from "@/constants";
 import { getUserById } from "@/lib/actions/user.actions";
 import { getImageById } from "@/lib/actions/image.actions";
 
-// Ensure TransformationTypeKey matches the keys of transformationTypes
-type TransformationTypeKey = keyof typeof transformationTypes;
 
-interface PageProps {
+type PageProps = {
   searchParams?: {
     id?: string;
     type?: TransformationTypeKey;
   };
-}
+};
 
 const Page = async ({ searchParams }: PageProps) => {
   const id = searchParams?.id;
 
   if (!id) redirect("/");
+
   const { userId } = await auth();
+
   if (!userId) redirect("/sign-in");
 
   const user = await getUserById(userId);
