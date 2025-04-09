@@ -7,6 +7,21 @@ import { connectToDatabase } from '../database/mongoose';
 import Transaction from '../database/models/transaction.model';
 import { updateCredits } from './user.actions';
 
+interface CheckoutTransactionParams {
+  plan: string;
+  amount: number;
+  credits: number;
+  buyerId: string;
+}
+
+interface CreateTransactionParams {
+  plan: string;
+  amount: number;
+  credits: number;
+  buyerId: string;
+}
+
+
 export async function checkoutCredits(transaction: CheckoutTransactionParams) {
   const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
 
@@ -31,8 +46,8 @@ export async function checkoutCredits(transaction: CheckoutTransactionParams) {
       buyerId: transaction.buyerId,
     },
     mode: 'payment',
-    success_url: `${process.env.NEXT_PUBLIC_SERVER_URL}/profile`,
-    cancel_url: `${process.env.NEXT_PUBLIC_SERVER_URL}/`,
+    success_url: `${process.env.NEXT_PUBLIC_SERVER_URL||"http://localhost:3000"}/profile`,
+    cancel_url: `${process.env.NEXT_PUBLIC_SERVER_URL||"http://localhost:3000"}/`,
   })
 
   redirect(session.url!)

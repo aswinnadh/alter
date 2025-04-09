@@ -17,10 +17,10 @@ import { Button } from "../ui/button";
 const MobileNav = () => {
   const pathname = usePathname();
   return (
-    <header className="header md:hidden">
+    <header className="header sm:hidden md:hidden">
       <Link href="/" className="flex items-center gap-2 md:py-2">
         <Image
-          src="assets/images/logo-text.svg"
+          src="/assets/images/logo-text.png"
           alt="logo"
           width={100}
           height={28}
@@ -43,7 +43,7 @@ const MobileNav = () => {
             <SheetContent className="sheet-content sm:w-64 bg-white dark:bg-gray-900 shadow-lg">
               <SheetTitle className="sr-only">Navigation Menu</SheetTitle>
               <Image
-                src="/assets/images/logo-text.svg"
+                src="/assets/images/logo-text.png"
                 alt="logo"
                 width={152}
                 height={23}

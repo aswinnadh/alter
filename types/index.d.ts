@@ -24,16 +24,17 @@ declare type CreateUserParams = {
       transformationType: string;
       width: number;
       height: number;
-      config: unknown;
+      config: Record<string, unknown>; // or a specific type if you have one
       secureURL: string;
       transformationURL: string;
-      aspectRatio: string | undefined;
-      prompt: string | undefined;
-      color: string | undefined;
+      aspectRatio?: string;
+      prompt?: string;
+      color?: string;
     };
     userId: string;
     path: string;
   };
+  
   
   declare type UpdateImageParams = {
     image: {
@@ -135,3 +136,5 @@ declare type CreateUserParams = {
     hasDownload?: boolean;
     setIsTransforming?: React.Dispatch<React.SetStateAction<boolean>>;
   };
+
+  

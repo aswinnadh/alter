@@ -121,8 +121,10 @@ export const getImageSize = (
       aspectRatioOptions[image.aspectRatio as AspectRatioKey]?.[dimension] || 1000
     );
   }
+
   return image?.[dimension] ?? 1000;
 };
+
 
 // ✅ DOWNLOAD IMAGE FUNCTION
 export const download = (url: string, filename: string): void => {
@@ -175,4 +177,17 @@ export const deepMergeObjects = <T extends Record<string, unknown>, U extends Re
   }
 
   return output as T & U;
+};
+
+export const sanitizeAttributes = (obj: Record<string, unknown>) => {
+  const validAttributes: Record<string, unknown> = {};
+
+  for (const [key, value] of Object.entries(obj)) {
+    // Only allow keys that are valid HTML attribute names
+    if (/^[a-zA-Z_][\w\-:.]*$/.test(key)) {
+      validAttributes[key] = value;
+    }
+  }
+
+  return validAttributes;
 };

@@ -190,4 +190,4 @@ export const navLinks = [
     publicId: "",
   };
   
-  export const creditFee = -1;
+  export const creditFees = -1

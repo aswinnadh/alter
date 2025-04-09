@@ -1,182 +1,229 @@
-// "use server";
+"use server";
 
-// import { revalidatePath } from "next/cache";
-// import { connectToDatabase } from "../database/mongoose";
-// import { handleError } from "../utils";
-// import User from "../database/models/user.model";
-// import Image from "../database/models/image.model";
-// import { redirect } from "next/navigation";
+import { revalidatePath } from "next/cache";
+import { connectToDatabase } from "../database/mongoose";
+import { handleError } from "../utils";
+import User from "../database/models/user.model";
+import Image from "../database/models/image.model";
+import { redirect } from "next/navigation";
+import { Query, Document } from "mongoose";
+import { v2 as cloudinary } from "cloudinary";
+import { IImage } from "../database/models/image.model";
 
-// import { v2 as cloudinary } from 'cloudinary'
+interface AddImageParams {
+  image: {
+    title: string;
+    transformationType: string;
+    publicId: string;
+    secureURL: string;
+    width: number;
+    height: number;
+    config: string;
+    transformationUrl: string;
+    aspectRatio?: string;
+    color?: string;
+    prompt?: string;
+  };
+  userId: string;
+  path: string;
+}
 
-// const populateUser = (query: unknown) => query.populate({
-//   path: 'author',
-//   model: User,
-//   select: '_id firstName lastName clerkId'
-// })
+interface UpdateImageParams {
+  image: {
+    _id: string;
+    title: string;
+    transformationType: string;
+    publicId: string;
+    secureURL: string;
+    width: number;
+    height: number;
+    config: string;
+    transformationUrl: string;
+    aspectRatio?: string;
+    color?: string;
+    prompt?: string;
+  };
+  userId: string;
+  path: string;
+}
 
-// // ADD IMAGE
-// export async function addImage({ image, userId, path }: AddImageParams) {
-//   try {
-//     await connectToDatabase();
+interface CloudinaryResource {
+  public_id: string;
+  [key: string]: unknown;
+}
 
-//     const author = await User.findById(userId);
+type PopulatableImageQuery<T> = Query<T, Document<unknown, object, IImage> & IImage>;
 
-//     if (!author) {
-//       throw new Error("User not found");
-//     }
 
-//     const newImage = await Image.create({
-//       ...image,
-//       author: author._id,
-//     })
 
-//     revalidatePath(path);
+const populateUser = <T>(query: PopulatableImageQuery<T>): PopulatableImageQuery<T> =>
+  query.populate({
+    path: "author",
+    model: "User",
+    select: "_id firstName lastName clerkId",
+  });
 
-//     return JSON.parse(JSON.stringify(newImage));
-//   } catch (error) {
-//     handleError(error)
-//   }
-// }
+// ADD IMAGE
+export async function addImage({ image, userId, path }: AddImageParams) {
+  try {
+    await connectToDatabase();
 
-// // UPDATE IMAGE
-// export async function updateImage({ image, userId, path }: UpdateImageParams) {
-//   try {
-//     await connectToDatabase();
+    const author = await User.findById(userId);
+    if (!author) throw new Error("User not found");
 
-//     const imageToUpdate = await Image.findById(image._id);
+    const newImage = await Image.create({
+      ...image,
+      author: author._id,
+    });
 
-//     if (!imageToUpdate || imageToUpdate.author.toHexString() !== userId) {
-//       throw new Error("Unauthorized or image not found");
-//     }
+    revalidatePath(path);
 
-//     const updatedImage = await Image.findByIdAndUpdate(
-//       imageToUpdate._id,
-//       image,
-//       { new: true }
-//     )
+    return JSON.parse(JSON.stringify(newImage));
+  } catch (error) {
+    handleError(error);
+  }
+}
 
-//     revalidatePath(path);
+// UPDATE IMAGE
+export async function updateImage({ image, userId, path }: UpdateImageParams) {
+  try {
+    await connectToDatabase();
 
-//     return JSON.parse(JSON.stringify(updatedImage));
-//   } catch (error) {
-//     handleError(error)
-//   }
-// }
+    const imageToUpdate = await Image.findById(image._id);
+    if (!imageToUpdate || imageToUpdate.author.toString() !== userId) {
+      throw new Error("Unauthorized or image not found");
+    }
 
-// // DELETE IMAGE
-// export async function deleteImage(imageId: string) {
-//   try {
-//     await connectToDatabase();
+    const updatedImage = await Image.findByIdAndUpdate(image._id, image, {
+      new: true,
+    });
 
-//     await Image.findByIdAndDelete(imageId);
-//   } catch (error) {
-//     handleError(error)
-//   } finally{
-//     redirect('/')
-//   }
-// }
+    revalidatePath(path);
 
-// // GET IMAGE
-// export async function getImageById(imageId: string) {
-//   try {
-//     await connectToDatabase();
+    return JSON.parse(JSON.stringify(updatedImage));
+  } catch (error) {
+    handleError(error);
+  }
+}
 
-//     const image = await populateUser(Image.findById(imageId));
+// DELETE IMAGE
+export async function deleteImage(imageId: string) {
+  try {
+    await connectToDatabase();
+    await Image.findByIdAndDelete(imageId);
+  } catch (error) {
+    handleError(error);
+  } finally {
+    redirect("/");
+  }
+}
 
-//     if(!image) throw new Error("Image not found");
+// GET IMAGE
+export async function getImageById(imageId: string) {
+  try {
+    await connectToDatabase();
 
-//     return JSON.parse(JSON.stringify(image));
-//   } catch (error) {
-//     handleError(error)
-//   }
-// }
+    const image = await populateUser(Image.findById(imageId));
+    if (!image) throw new Error("Image not found");
 
-// // GET IMAGES
-// export async function getAllImages({ limit = 9, page = 1, searchQuery = '' }: {
-//   limit?: number;
-//   page: number;
-//   searchQuery?: string;
-// }) {
-//   try {
-//     await connectToDatabase();
+    return JSON.parse(JSON.stringify(image));
+  } catch (error) {
+    handleError(error);
+  }
+}
 
-//     cloudinary.config({
-//       cloud_name: process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME,
-//       api_key: process.env.CLOUDINARY_API_KEY,
-//       api_secret: process.env.CLOUDINARY_API_SECRET,
-//       secure: true,
-//     })
+// GET IMAGES
+export async function getAllImages({ limit = 9, page = 1, searchQuery = '' }: {
+  limit?: number;
+  page: number;
+  searchQuery?: string;
+}) {
+  try {
+    await connectToDatabase();
 
-//     let expression = 'folder=imaginify';
+    cloudinary.config({
+      cloud_name: process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME,
+      api_key: process.env.CLOUDINARY_API_KEY,
+      api_secret: process.env.CLOUDINARY_API_SECRET,
+      secure: true,
+    });
 
-//     if (searchQuery) {
-//       expression += ` AND ${searchQuery}`
-//     }
+    const skipAmount = (page - 1) * limit;
 
-//     const { resources } = await cloudinary.search
-//       .expression(expression)
-//       .execute();
+    let query = {};
 
-//     const resourceIds = resources.map((resource: unknown) => resource.public_id);
+    if (searchQuery) {
+      // Cloudinary search expression using Google Vision tags
+      const expression = `folder=alter AND tags=${searchQuery}`;
 
-//     let query = {};
+      const { resources } = await cloudinary.search
+        .expression(expression)
+        .execute();
 
-//     if(searchQuery) {
-//       query = {
-//         publicId: {
-//           $in: resourceIds
-//         }
-//       }
-//     }
+      const resourceIds = resources.map(
+        (resource: CloudinaryResource) => resource.public_id
+      );
 
-//     const skipAmount = (Number(page) -1) * limit;
+      // MongoDB query combining Cloudinary auto-tagging and DB title search
+      query = {
+        $or: [
+          { publicId: { $in: resourceIds } },
+          { title: { $regex: searchQuery, $options: 'i' } }
+        ]
+      };
+    }
 
-//     const images = await populateUser(Image.find(query))
-//       .sort({ updatedAt: -1 })
-//       .skip(skipAmount)
-//       .limit(limit);
-    
-//     const totalImages = await Image.find(query).countDocuments();
-//     const savedImages = await Image.find().countDocuments();
+    const images = await populateUser(
+      Image.find(query)
+        .sort({ updatedAt: -1 })
+        .skip(skipAmount)
+        .limit(limit)
+    );
 
-//     return {
-//       data: JSON.parse(JSON.stringify(images)),
-//       totalPage: Math.ceil(totalImages / limit),
-//       savedImages,
-//     }
-//   } catch (error) {
-//     handleError(error)
-//   }
-// }
+    const totalImages = await Image.countDocuments(query);
+    const savedImages = await Image.countDocuments();
 
-// // GET IMAGES BY USER
-// export async function getUserImages({
-//   limit = 9,
-//   page = 1,
-//   userId,
-// }: {
-//   limit?: number;
-//   page: number;
-//   userId: string;
-// }) {
-//   try {
-//     await connectToDatabase();
+    return {
+      data: JSON.parse(JSON.stringify(images)),
+      totalPage: Math.ceil(totalImages / limit),
+      savedImages,
+    };
+  } catch (error) {
+    handleError(error);
+  }
+}
 
-//     const skipAmount = (Number(page) - 1) * limit;
 
-//     const images = await populateUser(Image.find({ author: userId }))
-//       .sort({ updatedAt: -1 })
-//       .skip(skipAmount)
-//       .limit(limit);
 
-//     const totalImages = await Image.find({ author: userId }).countDocuments();
+// GET IMAGES BY USER
+export async function getUserImages({
+  limit = 9,
+  page = 1,
+  userId,
+}: {
+  limit?: number;
+  page: number;
+  userId: string;
+}) {
+  try {
+    await connectToDatabase();
 
-//     return {
-//       data: JSON.parse(JSON.stringify(images)),
-//       totalPages: Math.ceil(totalImages / limit),
-//     };
-//   } catch (error) {
-//     handleError(error);
-//   }
-// }
+    const skipAmount = (page - 1) * limit;
+
+    const images = await populateUser(
+      Image.find({ author: userId })
+        .sort({ updatedAt: -1 })
+        .skip(skipAmount)
+        .limit(limit)
+    );
+
+    const totalImages = await Image.find({ author: userId }).countDocuments();
+
+    return {
+      data: JSON.parse(JSON.stringify(images)),
+      totalPages: Math.ceil(totalImages / limit),
+    };
+  } catch (error) {
+    handleError(error);
+  }
+}
