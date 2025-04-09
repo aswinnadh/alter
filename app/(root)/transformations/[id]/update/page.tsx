@@ -7,19 +7,21 @@ import { transformationTypes } from "@/constants";
 import { getUserById } from "@/lib/actions/user.actions";
 import { getImageById } from "@/lib/actions/image.actions";
 
-// Ensure TransformationTypeKey is constrained to the keys of transformationTypes
+// Ensure TransformationTypeKey matches the keys of transformationTypes
 type TransformationTypeKey = keyof typeof transformationTypes;
 
 interface PageProps {
-  params: {
-    id: string;
+  searchParams?: {
+    id?: string;
+    type?: TransformationTypeKey;
   };
 }
 
-const Page = async ({ params }: PageProps) => {
-  const { id } = params;
-  const { userId } = await auth();
+const Page = async ({ searchParams }: PageProps) => {
+  const id = searchParams?.id;
 
+  if (!id) redirect("/");
+  const { userId } = await auth();
   if (!userId) redirect("/sign-in");
 
   const user = await getUserById(userId);
