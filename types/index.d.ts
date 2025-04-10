@@ -113,6 +113,13 @@ declare type RemoveUrlQueryParams = {
   keysToRemove: string[];
 };
 
+// Add this to your existing types file
+declare module 'next' {
+  interface PageProps {
+    params?: Record<string, string>;
+    searchParams?: Record<string, string | string[] | undefined>;
+  }
+}
 declare type SearchParamProps = {
   params: { id: string };
   searchParams: { [key: string]: string | string[] | undefined };
