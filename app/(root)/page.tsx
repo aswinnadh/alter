@@ -4,21 +4,19 @@ import { getAllImages } from "@/lib/actions/image.actions";
 import Image from "next/image";
 import Link from "next/link";
 
+type SearchParamProps = {
+  params: { id: string; type: TransformationTypeKey };
+  searchParams: { [key: string]: string | string[] | undefined };
+};
+
 export const dynamic = "force-dynamic";
 
-export default async function Page({
-  searchParams,
-}: {
-  searchParams?: Record<string, string | string[] | undefined>;
-}) {
-  const page = Number(
-    typeof searchParams?.page === "string" ? searchParams.page : 1
-  );
-  const searchQuery =
-    typeof searchParams?.query === "string" ? searchParams.query : "";
+
+async function Home({ searchParams }: SearchParamProps) {
+  const page = Number(searchParams?.page) || 1;
+  const searchQuery = (searchParams?.query as string) || '';
 
   const images = await getAllImages({ page, searchQuery });
-
   return (
     <>
       <section className="home bg-banner px-4 py-10 sm:py-16">
@@ -41,8 +39,7 @@ export default async function Page({
                     src={link.icon}
                     alt={link.label}
                     width={24}
-                    height={24}
-                  />
+                    height={24} />
                 </div>
                 <p className="text-center text-white text-sm">{link.label}</p>
               </Link>
@@ -56,9 +53,11 @@ export default async function Page({
           hasSearch={true}
           images={images?.data}
           totalPages={images?.totalPage}
-          page={page}
-        />
+          page={page} />
       </section>
     </>
   );
 }
+
+export default Home;
+
