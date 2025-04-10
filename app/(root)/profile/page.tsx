@@ -7,9 +7,20 @@ import Header from "@/components/shared/Header";
 import { getUserImages } from "@/lib/actions/image.actions";
 import { getUserById } from "@/lib/actions/user.actions";
 
-const Profile = async ({ searchParams }: SearchParamProps) => {
+const Profile = async ({
+  searchParams = Promise.resolve({})
+}: {
+  searchParams?: Promise<Record<string, string | string[] | undefined>>
+}) => {
+  // Await the searchParams promise
   const resolvedSearchParams = await searchParams;
-  const page = Number(resolvedSearchParams?.page) || 1;
+  
+  // Handle page parameter
+  const pageParam = Array.isArray(resolvedSearchParams?.page) 
+    ? resolvedSearchParams.page[0] 
+    : resolvedSearchParams?.page;
+  const page = Number(pageParam) || 1;
+
   const { userId } = await auth();
 
   if (!userId) redirect("/sign-in");
