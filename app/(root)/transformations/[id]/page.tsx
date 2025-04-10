@@ -3,19 +3,13 @@ import Image from "next/image";
 import Link from "next/link";
 
 import Header from "@/components/shared/Header";
-import TransformedImage from "@/components/shared/TransformedImage";
 import { Button } from "@/components/ui/button";
 import { getImageById } from "@/lib/actions/image.actions";
 import { getImageSize } from "@/lib/utils";
 import { DeleteConfirmation } from "@/components/shared/DeleteConfirmation";
 
-interface SearchParamProps {
-  params: {
-    id: string;
-  };
-}
-
-const ImageDetails = async ({ params: { id } }: SearchParamProps) => {
+const ImageDetails = async (context: { params: { id: string } }) => {
+  const { id } = await context.params;
   const { userId } = await auth();
 
   const image = await getImageById(id);
@@ -77,21 +71,22 @@ const ImageDetails = async ({ params: { id } }: SearchParamProps) => {
               className="transformation-original_image"
             />
           </div>
-
-          {/* TRANSFORMED IMAGE */}
-          <TransformedImage
-            image={image}
-            type={image.transformationType}
-            title={image.title}
-            isTransforming={false}
-            transformationConfig={image.config}
-            hasDownload={true}
-          />
+          <div className="flex flex-col gap-4">
+          <h3 className="h3-bold text-dark-600">Transformed Image</h3>
+            {/* TRANSFORMED IMAGE */}
+            <Image
+              width={getImageSize(image.transformationType, image, "width")}
+              height={getImageSize(image.transformationType, image, "height")}
+              src={image.transformationUrl}
+              alt="image"
+              className="transformation-original_image"
+            />
+          </div>
         </div>
 
         {userId === image.author.clerkId && (
           <div className="mt-4 space-y-4">
-            <Button asChild type="button" className="submit-button capitalize">
+            <Button asChild type="button" className="submit-button capitalize bg-purple-gradient text-white">
               <Link href={`/transformations/${image._id}/update`}>
                 Update Image
               </Link>

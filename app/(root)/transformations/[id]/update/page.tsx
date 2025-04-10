@@ -13,7 +13,10 @@ interface SearchParamProps {
   };
 }
 
-const Page = async ({ params: { id } }: SearchParamProps) => {
+const Page = async (context: SearchParamProps) => {
+  const { params } = await context;
+  const { id } = await params;
+
   const { userId } = await auth();
 
   if (!userId) redirect("/sign-in");

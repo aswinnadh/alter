@@ -1,16 +1,20 @@
+import { redirect } from 'next/navigation';
 import Header from '@/components/shared/Header';
 import TransformationForm from '@/components/shared/TransformationForm';
 import { transformationTypes } from '@/constants';
 import { getUserById } from '@/lib/actions/user.actions';
 import { auth } from '@clerk/nextjs/server';
-import { redirect } from 'next/navigation';
 
-const AddTransformationTypePage = async ({ params: { type } }: { params: { type: string } }) => {
-  const { userId } =await auth();
-  const transformation = transformationTypes[type as keyof typeof transformationTypes];
+const AddTransformationTypePage = async (props: {
+  params: { type: keyof typeof transformationTypes };
+}) => {
+  const { params } = props;
+  const { type } =await params;
 
-  if(!userId) redirect('/sign-in')
+  const { userId } = await auth();
+  if (!userId) redirect('/sign-in');
 
+  const transformation = transformationTypes[type];
   const user = await getUserById(userId);
 
   return (
