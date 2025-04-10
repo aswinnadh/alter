@@ -6,7 +6,7 @@ import Link from "next/link";
 
 export const dynamic = "force-dynamic";
 
-async function Home({ searchParams }: SearchParamProps) {
+async function Home({ searchParams }: { searchParams: { page?: string; query?: string } }) {
   const page = Number(searchParams?.page) || 1;
   const searchQuery = (searchParams?.query as string) || '';
 
