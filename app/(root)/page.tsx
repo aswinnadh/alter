@@ -3,17 +3,19 @@ import { navLinks } from "@/constants";
 import { getAllImages } from "@/lib/actions/image.actions";
 import Image from "next/image";
 import Link from "next/link";
+
 type SearchParamProps = {
-  params: Promise<{ id: string; type: TransformationTypeKey }>;
-  searchParams: { [key: string]: string | string[] | undefined };
+  params: { id: string; type: TransformationTypeKey };
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 };
 
 export const dynamic = "force-dynamic";
 
 
 async function Home({ searchParams }: SearchParamProps) {
-  const page = Number(searchParams?.page) || 1;
-  const searchQuery = (searchParams?.query as string) || '';
+  const resolvedSearchParams = await searchParams;
+  const page = Number(resolvedSearchParams?.page) || 1;
+  const searchQuery = (resolvedSearchParams?.query as string) || '';
 
   const images = await getAllImages({ page, searchQuery });
   return (
