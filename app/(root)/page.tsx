@@ -4,12 +4,9 @@ import { getAllImages } from "@/lib/actions/image.actions";
 import Image from "next/image";
 import Link from "next/link";
 
-type HomePageProps = {
-  searchParams: { [key: string]: string | string[] | undefined };
-};
+export const dynamic = "force-dynamic";
 
-
-const Home = async ({ searchParams }: HomePageProps) => {
+async function Home({ searchParams }: SearchParamProps) {
   const page = Number(searchParams?.page) || 1;
   const searchQuery = (searchParams?.query as string) || '';
 
@@ -36,8 +33,7 @@ const Home = async ({ searchParams }: HomePageProps) => {
                     src={link.icon}
                     alt={link.label}
                     width={24}
-                    height={24}
-                  />
+                    height={24} />
                 </div>
                 <p className="text-center text-white text-sm">{link.label}</p>
               </Link>
@@ -51,12 +47,11 @@ const Home = async ({ searchParams }: HomePageProps) => {
           hasSearch={true}
           images={images?.data}
           totalPages={images?.totalPage}
-          page={page}
-        />
+          page={page} />
       </section>
     </>
   );
-};
+}
 
 export default Home;
 
