@@ -1,23 +1,16 @@
-import { Collection } from "@/components/shared/Collection";
-import { navLinks } from "@/constants";
-import { getAllImages } from "@/lib/actions/image.actions";
-import Image from "next/image";
-import Link from "next/link";
 
-type SearchParamProps = {
-  params: Promise<{ id: string; type: TransformationTypeKey }>;
-  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
-};
+import { Collection } from "@/components/shared/Collection"
+import { navLinks } from "@/constants"
+import { getAllImages } from "@/lib/actions/image.actions"
+import Image from "next/image"
+import Link from "next/link"
 
-export const dynamic = "force-dynamic";
+const Home = async ({ searchParams }: SearchParamProps) => {
+  const page = Number(searchParams?.page) || 1;
+  const searchQuery = (searchParams?.query as string) || '';
 
+  const images = await getAllImages({ page, searchQuery})
 
-async function Home({ searchParams }: SearchParamProps) {
-  const resolvedSearchParams = await searchParams;
-  const page = Number(resolvedSearchParams?.page) || 1;
-  const searchQuery = (resolvedSearchParams?.query as string) || '';
-
-  const images = await getAllImages({ page, searchQuery });
   return (
     <>
       <section className="home bg-banner px-4 py-10 sm:py-16">
@@ -50,15 +43,15 @@ async function Home({ searchParams }: SearchParamProps) {
       </section>
 
       <section className="sm:mt-12">
-        <Collection
+        <Collection 
           hasSearch={true}
           images={images?.data}
           totalPages={images?.totalPage}
-          page={page} />
+          page={page}
+        />
       </section>
     </>
-  );
+  )
 }
 
-export default Home;
-
+export default Home

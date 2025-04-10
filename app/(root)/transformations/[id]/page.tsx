@@ -3,14 +3,20 @@ import Image from "next/image";
 import Link from "next/link";
 
 import Header from "@/components/shared/Header";
-// import TransformedImage from "@/components/shared/TransformedImage";
+import TransformedImage from "@/components/shared/TransformedImage";
 import { Button } from "@/components/ui/button";
 import { getImageById } from "@/lib/actions/image.actions";
 import { getImageSize } from "@/lib/utils";
 import { DeleteConfirmation } from "@/components/shared/DeleteConfirmation";
 
-const ImageDetails = async ({ params: { id } }: { params: { id: string } }) => {
-  const { userId } =await auth();
+interface SearchParamProps {
+  params: {
+    id: string;
+  };
+}
+
+const ImageDetails = async ({ params: { id } }: SearchParamProps) => {
+  const { userId } = await auth();
 
   const image = await getImageById(id);
 
@@ -71,23 +77,21 @@ const ImageDetails = async ({ params: { id } }: { params: { id: string } }) => {
               className="transformation-original_image"
             />
           </div>
-          <div className="flex flex-col gap-4">
-          <h3 className="h3-bold text-dark-600">Transformed Image</h3>
-            {/* TRANSFORMED IMAGE */}
-            <Image
-              width={getImageSize(image.transformationType, image, "width")}
-              height={getImageSize(image.transformationType, image, "height")}
-              src={image.transformationUrl}
-              alt="image"
-              className="transformation-original_image"
-            />
-          </div>
-          {/* TRANSFORMING IMAGE */}
+
+          {/* TRANSFORMED IMAGE */}
+          <TransformedImage
+            image={image}
+            type={image.transformationType}
+            title={image.title}
+            isTransforming={false}
+            transformationConfig={image.config}
+            hasDownload={true}
+          />
         </div>
 
         {userId === image.author.clerkId && (
           <div className="mt-4 space-y-4">
-            <Button asChild type="button" className="submit-button capitalize bg-purple-gradient text-white">
+            <Button asChild type="button" className="submit-button capitalize">
               <Link href={`/transformations/${image._id}/update`}>
                 Update Image
               </Link>

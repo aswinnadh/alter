@@ -1,4 +1,4 @@
-
+// Removed unused eslint-disable directive
 
 // ====== USER PARAMS
 declare type CreateUserParams = {
@@ -25,7 +25,7 @@ declare type AddImageParams = {
     transformationType: string;
     width: number;
     height: number;
-    config: Record<string, unknown>;
+    config: Record<string, unknown>; // Specify a more appropriate type
     secureURL: string;
     transformationURL: string;
     aspectRatio: string | undefined;
@@ -113,11 +113,12 @@ declare type RemoveUrlQueryParams = {
   keysToRemove: string[];
 };
 
-// declare type SearchParamProps = {
-//   params: { id: string; type: TransformationTypeKey };
-//   searchParams: { [key: string]: string | string[] | undefined };
-// };
-
+declare type SearchParamProps = {
+  searchParams?: {
+    page?: string;
+    query?: string;
+  };
+};
 
 declare type TransformationFormProps = {
   action: "Add" | "Update";
@@ -129,19 +130,7 @@ declare type TransformationFormProps = {
 };
 
 declare type TransformedImageProps = {
-  image: {
-    title: string;
-    publicId: string;
-    transformationType: string;
-    width: number;
-    height: number;
-    config: Record<string, unknown>;
-    secureURL: string;
-    transformationURL: string;
-    aspectRatio?: string;
-    prompt?: string;
-    color?: string;
-  };
+  image: Record<string, unknown>; // Specify a more appropriate type
   type: string;
   title: string;
   transformationConfig: Transformations | null;
