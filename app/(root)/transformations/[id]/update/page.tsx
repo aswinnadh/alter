@@ -10,13 +10,8 @@ import { getImageById } from "@/lib/actions/image.actions";
 // Ensure TransformationTypeKey is constrained to the keys of transformationTypes
 type TransformationTypeKey = keyof typeof transformationTypes;
 
-interface PageProps {
-  params: {
-    id: string;
-  };
-}
 
-const Page = async ({ params }: PageProps) => {
+const Page = async ({ params }: { params: { id: string } }) => {
   const { id } =await params;
   const { userId } = await auth();
 
