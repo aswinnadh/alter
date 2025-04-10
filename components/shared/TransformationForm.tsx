@@ -6,7 +6,7 @@ import { z } from "zod";
 import { Form } from "@/components/ui/form";
 import {
   aspectRatioOptions,
-  creditFees,
+  creditFee,
   defaultValues,
   transformationTypes,
 } from "@/constants";
@@ -199,7 +199,7 @@ const TransformationForm = ({
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-        {creditBalance < Math.abs(creditFees) && <InsufficientCreditsModal/> }
+        {creditBalance < Math.abs(creditFee) && <InsufficientCreditsModal/> }
         <CustomField
           control={form.control}
           name="title"

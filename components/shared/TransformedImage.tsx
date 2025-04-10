@@ -1,6 +1,6 @@
 "use client";
 
-import { dataUrl, debounce, download, getImageSize, sanitizeAttributes } from "@/lib/utils";
+import { dataUrl, debounce, download, getImageSize } from "@/lib/utils";
 import { CldImage, getCldImageUrl } from "next-cloudinary";
 import { PlaceholderValue } from "next/dist/shared/lib/get-img-props";
 import Image from "next/image";
@@ -82,7 +82,7 @@ const TransformedImage = ({
                 if (setIsTransforming) setIsTransforming(false);
               }, 8000)();
             }}
-            {...sanitizeAttributes(transformationConfig)}
+            {...transformationConfig}
           />
 
           {isTransforming && (

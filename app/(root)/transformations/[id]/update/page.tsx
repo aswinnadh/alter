@@ -11,8 +11,9 @@ import { getImageById } from "@/lib/actions/image.actions";
 type TransformationTypeKey = keyof typeof transformationTypes;
 
 
+
 const Page = async ({ params }: { params: { id: string } }) => {
-  const { id } = params;
+  const { id } =  params;
   const { userId } = await auth();
 
   if (!userId) redirect("/sign-in");
@@ -33,7 +34,7 @@ const Page = async ({ params }: { params: { id: string } }) => {
           userId={user._id}
           type={image.transformationType as TransformationTypeKey}
           creditBalance={user.creditBalance}
-          config={image.config}
+          config={image.transformationConfig}
           data={image}
         />
       </section>

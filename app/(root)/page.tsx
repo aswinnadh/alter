@@ -4,20 +4,11 @@ import { getAllImages } from "@/lib/actions/image.actions";
 import Image from "next/image";
 import Link from "next/link";
 
-export const dynamic = "force-dynamic";
+const Home = async ({ searchParams }: SearchParamProps) => {
+  const page = Number(searchParams?.page) || 1;
+  const searchQuery = (searchParams?.query as string) || '';
 
-interface PageProps {
-  searchParams?: {
-    page?: string;
-    query?: string;
-  };
-}
-
-const Home = async ({ searchParams }: PageProps) => {
-  const page = Number(searchParams?.page ?? 1);
-  const searchQuery = searchParams?.query ?? "";
-
-  const images = await getAllImages({ page, searchQuery });
+  const images = await getAllImages({ page, searchQuery})
   return (
     <>
       <section className="home bg-banner px-4 py-10 sm:py-16">

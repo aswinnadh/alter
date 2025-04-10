@@ -1,36 +1,34 @@
-
+/* eslint-disable prefer-const */
+/* eslint-disable no-prototype-builtins */
 import { type ClassValue, clsx } from "clsx";
-import qs from "qs"; // ✅ Ensure type declarations are installed
+import qs from "qs";
 import { twMerge } from "tailwind-merge";
 
 import { aspectRatioOptions } from "@/constants";
 
-// ✅ Install type declarations for qs
-// Run: npm install --save-dev @types/qs
-
-// ✅ UTILITY FUNCTION: Combine Tailwind classes
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
-// ✅ ERROR HANDLER
-
-export const handleError = (error: unknown): never => {
+// ERROR HANDLER
+export const handleError = (error: unknown) => {
   if (error instanceof Error) {
+    // This is a native JavaScript error (e.g., TypeError, RangeError)
     console.error(error.message);
     throw new Error(`Error: ${error.message}`);
   } else if (typeof error === "string") {
+    // This is a string error message
     console.error(error);
     throw new Error(`Error: ${error}`);
   } else {
+    // This is an unknown type of error
     console.error(error);
     throw new Error(`Unknown error: ${JSON.stringify(error)}`);
   }
 };
 
-
-// ✅ PLACEHOLDER LOADER - while image is transforming
-const shimmer = (w: number, h: number): string => `
+// PLACEHOLDER LOADER - while image is transforming
+const shimmer = (w: number, h: number) => `
 <svg width="${w}" height="${h}" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
   <defs>
     <linearGradient id="g">
@@ -44,23 +42,22 @@ const shimmer = (w: number, h: number): string => `
   <animate xlink:href="#r" attributeName="x" from="-${w}" to="${w}" dur="1s" repeatCount="indefinite"  />
 </svg>`;
 
-const toBase64 = (str: string): string =>
+const toBase64 = (str: string) =>
   typeof window === "undefined"
     ? Buffer.from(str).toString("base64")
     : window.btoa(str);
 
-export const dataUrl = `data:image/svg+xml;base64,${toBase64(shimmer(1000, 1000))}`;
+export const dataUrl = `data:image/svg+xml;base64,${toBase64(
+  shimmer(1000, 1000)
+)}`;
+// ==== End
 
-// ✅ FORM URL QUERY
+// FORM URL QUERY
 export const formUrlQuery = ({
   searchParams,
   key,
   value,
-}: {
-  searchParams: URLSearchParams;
-  key: string;
-  value: string | null;
-}): string => {
+}: FormUrlQueryParams) => {
   const params = { ...qs.parse(searchParams.toString()), [key]: value };
 
   return `${window.location.pathname}?${qs.stringify(params, {
@@ -68,66 +65,52 @@ export const formUrlQuery = ({
   })}`;
 };
 
-// ✅ REMOVE KEY FROM QUERY
+// REMOVE KEY FROM QUERY
 export function removeKeysFromQuery({
   searchParams,
   keysToRemove,
-}: {
-  searchParams: string;
-  keysToRemove: string[];
-}): string {
+}: RemoveUrlQueryParams) {
   const currentUrl = qs.parse(searchParams);
 
   keysToRemove.forEach((key) => {
-    delete currentUrl[key as keyof typeof currentUrl];
+    delete currentUrl[key];
   });
 
   // Remove null or undefined values
-  Object.keys(currentUrl).forEach((key) => {
-    if (currentUrl[key as keyof typeof currentUrl] == null) {
-      delete currentUrl[key as keyof typeof currentUrl];
-    }
-  });
+  Object.keys(currentUrl).forEach(
+    (key) => currentUrl[key] == null && delete currentUrl[key]
+  );
 
   return `${window.location.pathname}?${qs.stringify(currentUrl)}`;
 }
 
-// ✅ DEBOUNCE FUNCTION (Using Spread Instead of Apply)
-export const debounce = <T extends (...args: unknown[]) => void>(
-  func: T,
-  delay: number
-): ((...args: Parameters<T>) => void) => {
-  let timeoutId: NodeJS.Timeout | null = null;
-  return (...args: Parameters<T>) => {
+// DEBOUNCE
+export const debounce = (func: (...args: unknown[]) => void, delay: number) => {
+  let timeoutId: NodeJS.Timeout | null;
+  return (...args: unknown[]) => {
     if (timeoutId) clearTimeout(timeoutId);
     timeoutId = setTimeout(() => func(...args), delay);
   };
 };
 
-// ✅ GET IMAGE SIZE FUNCTION
+// GE IMAGE SIZE
 export type AspectRatioKey = keyof typeof aspectRatioOptions;
-interface ImageData {
-  aspectRatio?: AspectRatioKey;
-  width?: number;
-  height?: number;
-}
 export const getImageSize = (
   type: string,
-  image: ImageData,
+  image: { aspectRatio?: string; width?: number; height?: number },
   dimension: "width" | "height"
 ): number => {
   if (type === "fill") {
     return (
-      aspectRatioOptions[image.aspectRatio as AspectRatioKey]?.[dimension] || 1000
+      aspectRatioOptions[image.aspectRatio as AspectRatioKey]?.[dimension] ||
+      1000
     );
   }
-
-  return image?.[dimension] ?? 1000;
+  return image?.[dimension] || 1000;
 };
 
-
-// ✅ DOWNLOAD IMAGE FUNCTION
-export const download = (url: string, filename: string): void => {
+// DOWNLOAD IMAGE
+export const download = (url: string, filename: string) => {
   if (!url) {
     throw new Error("Resource URL not provided! You need to provide one");
   }
@@ -138,56 +121,40 @@ export const download = (url: string, filename: string): void => {
       const blobURL = URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.href = blobURL;
-      a.download = filename.length ? `${filename.replace(/\s/g, "_")}.png` : "download.png";
+
+      if (filename && filename.length)
+        a.download = `${filename.replace(" ", "_")}.png`;
       document.body.appendChild(a);
       a.click();
-      URL.revokeObjectURL(blobURL);
-      document.body.removeChild(a);
     })
-    .catch((error) => handleError(error));
+    .catch((error) => console.log({ error }));
 };
 
-// ✅ DEEP MERGE OBJECTS FUNCTION (Fixed Type Issue)
-export const deepMergeObjects = <T extends Record<string, unknown>, U extends Record<string, unknown>>(
-  obj1: T,
-  obj2: U
-): T & U => {
-  if (!obj2) return obj1 as T & U;
+// DEEP MERGE OBJECTS
+export const deepMergeObjects = (obj1: Record<string, unknown>, obj2: Record<string, unknown> | null | undefined) => {
+  if(obj2 === null || obj2 === undefined) {
+    return obj1;
+  }
 
-  const output: Record<string, unknown> = { ...obj1 };
+  let output = { ...obj2 };
 
-  for (const key in obj2) {
-    if (Object.prototype.hasOwnProperty.call(obj2, key)) {
-      const value1 = obj1[key as keyof T];
-      const value2 = obj2[key as keyof U];
-
+  for (let key in obj1) {
+    if (obj1.hasOwnProperty(key)) {
       if (
-        typeof value1 === "object" &&
-        value1 !== null &&
-        typeof value2 === "object" &&
-        value2 !== null
+        obj1[key] &&
+        typeof obj1[key] === "object" &&
+        obj2[key] &&
+        typeof obj2[key] === "object"
       ) {
-        // 🔹 Recursively merge nested objects
-        output[key] = deepMergeObjects(value1 as Record<string, unknown>, value2 as Record<string, unknown>);
+        output[key] = deepMergeObjects(
+          obj1[key] as Record<string, unknown>,
+          obj2[key] as Record<string, unknown>
+        );
       } else {
-        // 🔹 Assign non-object values directly
-        output[key] = value2;
+        output[key] = obj1[key];
       }
     }
   }
 
-  return output as T & U;
-};
-
-export const sanitizeAttributes = (obj: Record<string, unknown>) => {
-  const validAttributes: Record<string, unknown> = {};
-
-  for (const [key, value] of Object.entries(obj)) {
-    // Only allow keys that are valid HTML attribute names
-    if (/^[a-zA-Z_][\w\-:.]*$/.test(key)) {
-      validAttributes[key] = value;
-    }
-  }
-
-  return validAttributes;
+  return output;
 };
