@@ -7,15 +7,14 @@ import { transformationTypes } from "@/constants";
 import { getUserById } from "@/lib/actions/user.actions";
 import { getImageById } from "@/lib/actions/image.actions";
 
-interface SearchParamProps {
-  params: {
-    id: string;
-  };
-}
-
-const Page = async (context: SearchParamProps) => {
-  const { params } = await context;
-  const { id } = await params;
+const Page = async ({
+  params = Promise.resolve({ id: '' })
+}: {
+  params?: Promise<{ id: string }>
+}) => {
+  // Await the params promise
+  const resolvedParams = await params;
+  const { id } = resolvedParams;
 
   const { userId } = await auth();
 
