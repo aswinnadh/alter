@@ -114,17 +114,16 @@ declare type RemoveUrlQueryParams = {
 };
 
 // Add this to your existing types file
-// Add this to your existing types file
 declare module 'next' {
   interface PageProps {
     params?: Record<string, string>;
-    searchParams?: Record<string, string | string[] | undefined> | Promise<Record<string, string | string[] | undefined>>;
+    searchParams: Promise<Record<string, string | string[] | undefined>>;
   }
 }
 
 declare type SearchParamProps = {
   params?: Record<string, string>;
-  searchParams: Record<string, string | string[] | undefined>;
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
 };
 
 declare type TransformationFormProps = {

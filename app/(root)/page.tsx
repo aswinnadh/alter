@@ -5,20 +5,23 @@ import Image from "next/image"
 import Link from "next/link"
 
 const Home = async ({
-  searchParams = {}
+  searchParams = Promise.resolve({})
 }: {
-  searchParams?: { [key: string]: string | string[] | undefined }
+  searchParams?: Promise<Record<string, string | string[] | undefined>>
 }) => {
+  // Await the searchParams promise
+  const resolvedSearchParams = await searchParams;
+  
   // Handle both string and string[] cases for page parameter
-  const pageParam = Array.isArray(searchParams?.page) 
-    ? searchParams.page[0] 
-    : searchParams?.page;
+  const pageParam = Array.isArray(resolvedSearchParams?.page) 
+    ? resolvedSearchParams.page[0] 
+    : resolvedSearchParams?.page;
   const page = Number(pageParam) || 1;
   
   // Handle both string and string[] cases for query parameter
-  const searchQuery = Array.isArray(searchParams?.query)
-    ? searchParams.query[0]
-    : searchParams?.query || '';
+  const searchQuery = Array.isArray(resolvedSearchParams?.query)
+    ? resolvedSearchParams.query[0]
+    : resolvedSearchParams?.query || '';
 
   const images = await getAllImages({ page, searchQuery })
 
