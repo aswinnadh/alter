@@ -10,7 +10,7 @@ type HomePageProps = {
 
 
 const Home = async ({ searchParams }: HomePageProps) => {
-  const page = await Number(searchParams?.page) || 1;
+  const page = Number(searchParams?.page) || 1;
   const searchQuery = (searchParams?.query as string) || '';
 
   const images = await getAllImages({ page, searchQuery });
