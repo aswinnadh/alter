@@ -9,10 +9,13 @@ export const dynamic = "force-dynamic";
 export default async function Page({
   searchParams,
 }: {
-  searchParams?: { page?: string; query?: string };
+  searchParams?: Record<string, string | string[] | undefined>;
 }) {
-  const page = Number(searchParams?.page) || 1;
-  const searchQuery = searchParams?.query || "";
+  const page = Number(
+    typeof searchParams?.page === "string" ? searchParams.page : 1
+  );
+  const searchQuery =
+    typeof searchParams?.query === "string" ? searchParams.query : "";
 
   const images = await getAllImages({ page, searchQuery });
 

@@ -10,11 +10,12 @@ import { getUserById } from "@/lib/actions/user.actions";
 export default async function Page({
   searchParams,
 }: {
-  searchParams?: { page?: string; query?: string };
+  searchParams?: Record<string, string | string[] | undefined>;
 }) {
-  const page = Number(searchParams?.page) || 1;
-  const { userId } = await auth();
+  const page =
+    typeof searchParams?.page === "string" ? Number(searchParams.page) : 1;
 
+  const { userId } = await auth();
   if (!userId) redirect("/sign-in");
 
   const user = await getUserById(userId);
