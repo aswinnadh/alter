@@ -6,13 +6,12 @@ import Link from "next/link";
 
 export const dynamic = "force-dynamic";
 
-const Home = async (props: { searchParams?: { page?: string; query?: string } }) => {
-  const searchParams =await props.searchParams || {};
-
-  const page = Number(searchParams.page) || 1;
-  const searchQuery = searchParams.query || "";
+const Home = async ({ searchParams }: { searchParams?: { page?: string; query?: string } }) => {
+  const page = Number(searchParams?.page) || 1;
+  const searchQuery = searchParams?.query || "";
 
   const images = await getAllImages({ page, searchQuery });
+
 
   return (
     <>
