@@ -5,12 +5,20 @@ import Image from "next/image"
 import Link from "next/link"
 
 const Home = async ({
-  searchParams
+  searchParams = {}
 }: {
   searchParams?: { [key: string]: string | string[] | undefined }
 }) => {
-  const page = Number(searchParams?.page) || 1;
-  const searchQuery = (searchParams?.query as string) || '';
+  // Handle both string and string[] cases for page parameter
+  const pageParam = Array.isArray(searchParams?.page) 
+    ? searchParams.page[0] 
+    : searchParams?.page;
+  const page = Number(pageParam) || 1;
+  
+  // Handle both string and string[] cases for query parameter
+  const searchQuery = Array.isArray(searchParams?.query)
+    ? searchParams.query[0]
+    : searchParams?.query || '';
 
   const images = await getAllImages({ page, searchQuery })
 
