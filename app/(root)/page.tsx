@@ -10,7 +10,7 @@ type PageProps = {
   searchParams: Record<string, string | string[] | undefined>;
 };
 
-async function Home({ searchParams }: PageProps) {
+async function Page({ searchParams }: PageProps) {
   const page = Number(searchParams?.page) || 1;
   const searchQuery = (searchParams?.query as string) || '';
 
@@ -57,5 +57,5 @@ async function Home({ searchParams }: PageProps) {
   );
 }
 
-export default Home;
+export default Page;
 
