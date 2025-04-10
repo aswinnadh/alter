@@ -11,7 +11,7 @@ import { getUserById } from "@/lib/actions/user.actions";
 
 
 interface PageProps {
-  searchParams?: { [key: string]: string | string[] | undefined };
+  searchParams?: { page?: string; query?: string };
 }
 
 const Profile = async ({ searchParams }: PageProps) => {

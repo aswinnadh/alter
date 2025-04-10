@@ -7,10 +7,7 @@ import Link from "next/link";
 export const dynamic = "force-dynamic";
 
 type PageProps = {
-  searchParams: {
-    page?: string;
-    query?: string;
-  };
+  searchParams: Record<string, string | string[] | undefined>;
 };
 
 async function Home({ searchParams }: PageProps) {
