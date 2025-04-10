@@ -8,7 +8,7 @@ import { getUserImages } from "@/lib/actions/image.actions";
 import { getUserById } from "@/lib/actions/user.actions";
 
 type SearchParamProps = {
-  params: Promise<{ id: string; type: TransformationTypeKey }>;
+  params: { id: string; type: TransformationTypeKey };
   searchParams: { [key: string]: string | string[] | undefined };
 };
 
