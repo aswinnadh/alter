@@ -12,7 +12,7 @@ type TransformationTypeKey = keyof typeof transformationTypes;
 
 
 const Page = async ({ params }: { params: { id: string } }) => {
-  const { id } =await params;
+  const { id } = params;
   const { userId } = await auth();
 
   if (!userId) redirect("/sign-in");

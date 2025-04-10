@@ -11,8 +11,6 @@ const Home = async ({ searchParams }: { searchParams?: { page?: string; query?: 
   const searchQuery = searchParams?.query || "";
 
   const images = await getAllImages({ page, searchQuery });
-
-
   return (
     <>
       <section className="home bg-banner px-4 py-10 sm:py-16">
