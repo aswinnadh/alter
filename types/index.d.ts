@@ -114,10 +114,8 @@ declare type RemoveUrlQueryParams = {
 };
 
 declare type SearchParamProps = {
-  searchParams?: Promise<{
-    page?: string;
-    query?: string;
-  }> | undefined;
+  params: { id: string };
+  searchParams: { [key: string]: string | string[] | undefined };
 };
 
 declare type TransformationFormProps = {

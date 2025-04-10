@@ -1,14 +1,12 @@
-
 import { Collection } from "@/components/shared/Collection"
 import { navLinks } from "@/constants"
 import { getAllImages } from "@/lib/actions/image.actions"
 import Image from "next/image"
 import Link from "next/link"
 
-const Home = async ({ searchParams }: { searchParams?: Record<string, string | undefined> }) => {
-  const { page: pageParam, query: queryParam } = searchParams || {};
-  const page = Number(pageParam) || 1;
-  const searchQuery = queryParam || '';
+const Home = async ({ searchParams }: { searchParams: { [key: string]: string | string[] | undefined } }) => {
+  const page = Number(searchParams?.page) || 1;
+  const searchQuery = (searchParams?.query as string) || '';
 
   const images = await getAllImages({ page, searchQuery })
 
