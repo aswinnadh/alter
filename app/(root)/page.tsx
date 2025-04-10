@@ -6,12 +6,12 @@ import Link from "next/link";
 
 export const dynamic = "force-dynamic";
 
-interface PageProps {
+type PageProps = {
   searchParams: {
     page?: string;
     query?: string;
   };
-}
+};
 
 async function Home({ searchParams }: PageProps) {
   const page = Number(searchParams?.page) || 1;

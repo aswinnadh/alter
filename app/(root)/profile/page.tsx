@@ -9,11 +9,12 @@ import { getUserById } from "@/lib/actions/user.actions";
 
 
 
-interface ProfileProps {
+
+interface PageProps {
   searchParams?: { [key: string]: string | string[] | undefined };
 }
 
-const Profile = async ({ searchParams }: ProfileProps) => {
+const Profile = async ({ searchParams }: PageProps) => {
   const page = Number(searchParams?.page) || 1;
   const { userId } = await auth();
 
