@@ -3,10 +3,13 @@ import { navLinks } from "@/constants"
 import { getAllImages } from "@/lib/actions/image.actions"
 import Image from "next/image"
 import Link from "next/link"
+import { type NextPage } from 'next'
 
-const Home = async ({ searchParams }: { searchParams: { [key: string]: string | string[] | undefined } }) => {
-  const page = Number(searchParams?.page) || 1;
-  const searchQuery = (searchParams?.query as string) || '';
+const Home: NextPage<{
+  searchParams: Record<string, string | string[] | undefined>
+}> = async ({ searchParams }) => {
+  const page = Number(searchParams?.page) || 1
+  const searchQuery = (searchParams?.query as string) || ''
 
   const images = await getAllImages({ page, searchQuery })
 
