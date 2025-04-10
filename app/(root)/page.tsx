@@ -3,14 +3,16 @@ import { navLinks } from "@/constants";
 import { getAllImages } from "@/lib/actions/image.actions";
 import Image from "next/image";
 import Link from "next/link";
+type PageProps = {
+  searchParams?: {
+    page?: string;
+    query?: string;
+  };
+};
 
 export const dynamic = "force-dynamic";
 
-type PageProps = {
-  searchParams: Record<string, string | string[] | undefined>;
-};
-
-async function Page({ searchParams }: PageProps) {
+async function Home({ searchParams }: PageProps) {
   const page = Number(searchParams?.page) || 1;
   const searchQuery = (searchParams?.query as string) || '';
 
@@ -57,5 +59,5 @@ async function Page({ searchParams }: PageProps) {
   );
 }
 
-export default Page;
+export default Home;
 
