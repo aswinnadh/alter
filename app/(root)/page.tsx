@@ -3,9 +3,8 @@ import { navLinks } from "@/constants";
 import { getAllImages } from "@/lib/actions/image.actions";
 import Image from "next/image";
 import Link from "next/link";
-
 type SearchParamProps = {
-  params: { id: string; type: TransformationTypeKey };
+  params: Promise<{ id: string; type: TransformationTypeKey }>;
   searchParams: { [key: string]: string | string[] | undefined };
 };
 
