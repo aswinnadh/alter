@@ -8,10 +8,16 @@ import { getImageById } from "@/lib/actions/image.actions";
 import { getImageSize } from "@/lib/utils";
 import { DeleteConfirmation } from "@/components/shared/DeleteConfirmation";
 
-const ImageDetails = async (context: { params: { id: string } }) => {
-  const { id } = await context.params;
+const ImageDetails = async ({
+  params = Promise.resolve({ id: '' })
+}: {
+  params?: Promise<{ id: string }>
+}) => {
+  // Await the params promise
+  const resolvedParams = await params;
+  const { id } = resolvedParams;
+  
   const { userId } = await auth();
-
   const image = await getImageById(id);
 
   return (
@@ -59,10 +65,8 @@ const ImageDetails = async (context: { params: { id: string } }) => {
 
       <section className="mt-10 border-t border-dark-400/15">
         <div className="transformation-grid">
-          {/* MEDIA UPLOADER */}
           <div className="flex flex-col gap-4">
             <h3 className="h3-bold text-dark-600">Original</h3>
-
             <Image
               width={getImageSize(image.transformationType, image, "width")}
               height={getImageSize(image.transformationType, image, "height")}
@@ -72,8 +76,7 @@ const ImageDetails = async (context: { params: { id: string } }) => {
             />
           </div>
           <div className="flex flex-col gap-4">
-          <h3 className="h3-bold text-dark-600">Transformed Image</h3>
-            {/* TRANSFORMED IMAGE */}
+            <h3 className="h3-bold text-dark-600">Transformed Image</h3>
             <Image
               width={getImageSize(image.transformationType, image, "width")}
               height={getImageSize(image.transformationType, image, "height")}
@@ -86,12 +89,15 @@ const ImageDetails = async (context: { params: { id: string } }) => {
 
         {userId === image.author.clerkId && (
           <div className="mt-4 space-y-4">
-            <Button asChild type="button" className="submit-button capitalize bg-purple-gradient text-white">
+            <Button 
+              asChild 
+              type="button" 
+              className="submit-button capitalize bg-purple-gradient text-white"
+            >
               <Link href={`/transformations/${image._id}/update`}>
                 Update Image
               </Link>
             </Button>
-
             <DeleteConfirmation imageId={image._id} />
           </div>
         )}
