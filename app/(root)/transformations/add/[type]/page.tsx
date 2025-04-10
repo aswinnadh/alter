@@ -5,11 +5,14 @@ import { transformationTypes } from '@/constants';
 import { getUserById } from '@/lib/actions/user.actions';
 import { auth } from '@clerk/nextjs/server';
 
-const AddTransformationTypePage = async (props: {
-  params: { type: keyof typeof transformationTypes };
+const AddTransformationTypePage = async ({
+  params = Promise.resolve({ type: 'restore' })
+}: {
+  params?: Promise<{ type: keyof typeof transformationTypes }>
 }) => {
-  const { params } = props;
-  const { type } =await params;
+  // Await the params promise
+  const resolvedParams = await params;
+  const { type } = resolvedParams;
 
   const { userId } = await auth();
   if (!userId) redirect('/sign-in');
