@@ -3,20 +3,19 @@ import { navLinks } from "@/constants";
 import { getAllImages } from "@/lib/actions/image.actions";
 import Image from "next/image";
 import Link from "next/link";
-type PageProps = {
-  searchParams?: {
-    page?: string;
-    query?: string;
-  };
-};
 
 export const dynamic = "force-dynamic";
 
-async function Home({ searchParams }: PageProps) {
+export default async function Page({
+  searchParams,
+}: {
+  searchParams?: { page?: string; query?: string };
+}) {
   const page = Number(searchParams?.page) || 1;
-  const searchQuery = (searchParams?.query as string) || '';
+  const searchQuery = searchParams?.query || "";
 
   const images = await getAllImages({ page, searchQuery });
+
   return (
     <>
       <section className="home bg-banner px-4 py-10 sm:py-16">
@@ -39,7 +38,8 @@ async function Home({ searchParams }: PageProps) {
                     src={link.icon}
                     alt={link.label}
                     width={24}
-                    height={24} />
+                    height={24}
+                  />
                 </div>
                 <p className="text-center text-white text-sm">{link.label}</p>
               </Link>
@@ -53,11 +53,9 @@ async function Home({ searchParams }: PageProps) {
           hasSearch={true}
           images={images?.data}
           totalPages={images?.totalPage}
-          page={page} />
+          page={page}
+        />
       </section>
     </>
   );
 }
-
-export default Home;
-

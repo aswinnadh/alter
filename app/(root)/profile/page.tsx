@@ -7,14 +7,11 @@ import Header from "@/components/shared/Header";
 import { getUserImages } from "@/lib/actions/image.actions";
 import { getUserById } from "@/lib/actions/user.actions";
 
-
-
-
-interface PageProps {
+export default async function Page({
+  searchParams,
+}: {
   searchParams?: { page?: string; query?: string };
-}
-
-const Profile = async ({ searchParams }: PageProps) => {
+}) {
   const page = Number(searchParams?.page) || 1;
   const { userId } = await auth();
 
@@ -47,7 +44,7 @@ const Profile = async ({ searchParams }: PageProps) => {
           <div className="mt-4 flex items-center gap-4">
             <Image
               src="/assets/icons/photo.svg"
-              alt="coins"
+              alt="photo"
               width={50}
               height={50}
               className="size-9 md:size-12"
@@ -66,6 +63,4 @@ const Profile = async ({ searchParams }: PageProps) => {
       </section>
     </>
   );
-};
-
-export default Profile;
+}
