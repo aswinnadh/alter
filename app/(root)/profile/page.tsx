@@ -8,12 +8,12 @@ import { getUserImages } from "@/lib/actions/image.actions";
 import { getUserById } from "@/lib/actions/user.actions";
 
 type SearchParamProps = {
-  params: { id: string; type: TransformationTypeKey };
-  searchParams: { [key: string]: string | string[] | undefined };
+  params: Promise<{ id: string; type: TransformationTypeKey }>;
+  searchParams: URLSearchParams;
 };
 
 const Profile = async ({ searchParams }: SearchParamProps) => {
-  const page = Number(searchParams?.page) || 1;
+  const page = Number(searchParams.get("page")) || 1;
   const { userId } = await auth();
 
   if (!userId) redirect("/sign-in");
